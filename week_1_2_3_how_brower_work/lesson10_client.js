@@ -1,4 +1,6 @@
-const net = require('net')
+const net = require('net');
+const { parseHTML } = require('./week2_lesson1_parser.js');
+// const parser = require('./week2_lesson1_parser.js');
 
 class Request {
   constructor(options) {
@@ -33,7 +35,7 @@ class Request {
         })
       }
       connection.on('data', (data) => {
-        console.log(data.toString());
+        // console.log(data.toString());
         parser.receive(data.toString());
 
         if (parser.isFinished) {
@@ -208,5 +210,8 @@ void async function () {
     }
   });
   let response = await request.send();
-  console.log(response)
+  // let dom = parser.parseHTML(response.body);
+  let dom = parseHTML(response.body);
+  // console.log(dom);
+  // console.log(response.body)
 }()
