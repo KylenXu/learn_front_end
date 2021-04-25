@@ -14,7 +14,7 @@ function addCSSRules(text) {
   rules.push(...ast.stylesheet.rules);
 }
 function match(element, selector) {
-  
+
   if (!selector || !element.attributes) return false;
   if (selector.charAt(0) === '#') {
     let attr = element.attributes.filter(attr => attr.name === 'id')[0]
@@ -38,7 +38,7 @@ function computeCSS(element) {
   // console.log("compute CSS for Element", element);
   var elements = stack.slice().reverse();
 
-  if (!element.computedStyle) element.computedStyle = {}
+  if (!element.computedStyle) element.computedStyle = {};
   for (let rule of rules) {
     var selectorParts = rule.selectors[0].split(" ").reverse();
     if (!match(element, selectorParts[0]))
@@ -52,13 +52,23 @@ function computeCSS(element) {
     }
     if (j >= selectorParts.length) matched = true;
     if (matched) {
-      console.log("Element", element, "matched rule", rule);
+      // console.log("Element", element, "matched rule", rule);
+      
+      let computedStyle = element.computedStyle;
+      for (let declaration of rule.declarations) {
+        if (!computedStyle[declaration.property]) {
+          computedStyle[declaration.property] = {};
+        }
+        computedStyle[declaration.property].value = declaration.value;
+      }
+      console.log(element.computedStyle);
+      
     }
   }
 }
 
 function emit(token) {
-  
+
   let top = stack[stack.length - 1];
 
   if (token.type === "startTag") {
