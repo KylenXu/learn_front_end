@@ -10,16 +10,55 @@ let currentTextNode = null;
 let rules = [];
 function addCSSRules(text) {
   var ast = css.parse(text);
-  console.log(JSON.stringify(ast, null, "     "));
+  // console.log(JSON.stringify(ast, null, "     "));
   rules.push(...ast.stylesheet.rules);
+}
+function match(element, selector) {
+  
+  if (!selector || !element.attributes) return false;
+  if (selector.charAt(0) === '#') {
+    let attr = element.attributes.filter(attr => attr.name === 'id')[0]
+    if (attr && attr.value === selector.replace('#', '')) {
+      return true;
+    }
+  } else if (selector.charAt(0) === '.') {
+    let attr = element.attributes.filter(attr => attr.name === 'class')[0]
+    if (attr && attr.value === selector.replace('.', '')) {
+      return true;
+    }
+  } else {
+    if (element.tagName === selector) {
+      return true
+    }
+  }
+  return false;
 }
 function computeCSS(element) {
   // console.log(rules);
   // console.log("compute CSS for Element", element);
-  var element = stack.slice().reverse();
+  var elements = stack.slice().reverse();
+
+  if (!element.computedStyle) element.computedStyle = {}
+  for (let rule of rules) {
+    var selectorParts = rule.selectors[0].split(" ").reverse();
+    if (!match(element, selectorParts[0]))
+      continue;
+    let matched = false;
+    var j = 1;
+    for (var i = 0; i < elements.length; i++) {
+      if (match(elements[i], selectorParts[j])) {
+        j++;
+      }
+    }
+    if (j >= selectorParts.length) matched = true;
+    if (matched) {
+      console.log("Element", element, "matched rule", rule);
+    }
+  }
 }
 
 function emit(token) {
+  
   let top = stack[stack.length - 1];
 
   if (token.type === "startTag") {
@@ -233,6 +272,7 @@ function afterQuoteAttributeValue(c) {
 function selfClosingStartTag(c) {
   if (c === '>') {
     currentToken.isSelfClosing = true;
+    emit(currentToken)
     return data;
   } else if (c === EOF) {
   } else {
