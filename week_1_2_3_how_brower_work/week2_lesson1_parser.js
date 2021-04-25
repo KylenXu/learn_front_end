@@ -14,9 +14,9 @@ function addCSSRules(text) {
   rules.push(...ast.stylesheet.rules);
 }
 function computeCSS(element) {
-  console.log(rules);
-  console.log("compute CSS for Element", element);
-
+  // console.log(rules);
+  // console.log("compute CSS for Element", element);
+  var element = stack.slice().reverse();
 }
 
 function emit(token) {
