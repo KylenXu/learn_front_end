@@ -8,10 +8,15 @@ let stack = [{ type: "document", children: [] }];
 let currentTextNode = null;
 
 let rules = [];
-function addCSSRules(text){
+function addCSSRules(text) {
   var ast = css.parse(text);
-  console.log(JSON.stringify(ast,null,  "     "));
+  console.log(JSON.stringify(ast, null, "     "));
   rules.push(...ast.stylesheet.rules);
+}
+function computeCSS(element) {
+  console.log(rules);
+  console.log("compute CSS for Element", element);
+
 }
 
 function emit(token) {
@@ -31,7 +36,8 @@ function emit(token) {
           value: token[p]
         })
       }
-    };
+    }
+    computeCSS(element);
     top.children.push(element);
     element.parent = top;
     if (!token.isSelfClosing)
@@ -41,7 +47,7 @@ function emit(token) {
     if (token.tagName != top.tagName) {
       throw new Error("Tag start end doesno't match!");
     } else {
-      if(top.tagName === 'style'){
+      if (top.tagName === 'style') {
         addCSSRules(top.children[0].content);
       }
       stack.pop();
