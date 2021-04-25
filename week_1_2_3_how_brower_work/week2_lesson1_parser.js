@@ -58,7 +58,7 @@ function emit(token) {
     currentTextNode.content += token.content;
   }
 
-  console.log(token);
+  // console.log(token);
 }
 
 function data(c) {

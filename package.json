@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/KylenXu/learn_front_end/issues"
   },
-  "homepage": "https://github.com/KylenXu/learn_front_end#readme"
+  "homepage": "https://github.com/KylenXu/learn_front_end#readme",
+  "dependencies": {
+    "css": "^3.0.0"
+  }
 }
