@@ -1,5 +1,6 @@
 const css = require('css');
 const EOF = Symbol('EOF'); // EOF: end of file
+const layout = require('./week3_layout.js');
 
 let currentToken = null;
 let currentAttribute = null;
@@ -128,6 +129,7 @@ function emit(token) {
       if (top.tagName === 'style') {
         addCSSRules(top.children[0].content);
       }
+      layout(top);
       stack.pop();
     }
     currentTextNode = null;

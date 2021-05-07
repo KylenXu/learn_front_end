@@ -16,23 +16,47 @@ http.createServer((request, response) => {
 `<html maaa=a >
 <head>
     <style>
-body div #myid{
-  width: 100px;
-  backrground-color: #ff5000;
+#container {
+    width:500px;
+    height:300px;;
+    display:flex;
 }
-body div img{
-  width: 30px;
-  backrground-color: #ff1111;
+#container #myid{
+    width:200px;
+}
+#container .c1{
+    flex:1;
 }
     </style>
 </head>
 <body>
-    <div>
-        <img id="myid"/>
-        <img />
+    <div id="container">
+        <div id="myid"/>
+        <div class="c1" />
     </div>
 </body>
 </html>`);
+//     response.end(
+// `<html maaa=a >
+// <head>
+//     <style>
+// body div #myid{
+//   width: 100px;
+//   backrground-color: #ff5000;
+// }
+// body div img{
+//   width: 30px;
+//   backrground-color: #ff1111;
+// }
+//     </style>
+// </head>
+// <body>
+//     <div>
+//         <img id="myid"/>
+//         <img />
+//     </div>
+// </body>
+// </html>`);
   })
 
 }).listen(8088);
