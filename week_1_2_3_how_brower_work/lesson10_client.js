@@ -2,6 +2,9 @@ const net = require('net');
 const { parseHTML } = require('./week2_lesson1_parser.js');
 // const parser = require('./week2_lesson1_parser.js');
 
+const images = require('images');
+const render = require('./week3_render.js');
+
 class Request {
   constructor(options) {
     this.method = options.method || 'GET';
@@ -212,6 +215,11 @@ void async function () {
   let response = await request.send();
   // let dom = parser.parseHTML(response.body);
   let dom = parseHTML(response.body);
+
+  let viewport = images(800, 600);
+  render(viewport, dom.children[0].children[3].children[1].children[1]);
+  render(viewport, dom.children[0].children[3].children[1].children[3]);
+  viewport.save('viewport.jpg');
   // console.log(JSON.stringify(dom, null, "  "));
   // console.log('');
   // console.log(response.body)
