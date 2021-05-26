@@ -1,92 +1,86 @@
-<script>
-  class XRegExp {
-    constructor(source, flag, root = "root") {
-      this.table = new Map();
-      this.regexp = new RegExp(this.compileRegExp(source, root, 0).source, flag);
-    }
+<pre>
 
-    compileRegExp(source, name, start) {
-      let length = 0;
-      const regExp = source[name].source.replace(/\<([^>]+)\>/g, (str, $1) => {
-        this.table.set(start + length, $1);
-        ++length;
-        let r = this.compileRegExp(source, $1, start + length);
-        length += r.length;
-        return `(${r.source})`;
-      });
-      return { source: regExp, length };
-    }
-
-    exec(string) {
-      const r = this.regexp.exec(string);
-      for (let i = 1; i < r.length; i++) {
-        if (r[i] !== void 0) {
-          r[this.table.get(i - 1)] = r[i];
-        }
+  <script>
+  
+    class XRegExp {
+      constructor(source, flag, root = "root") {
+        this.table = new Map();
+        this.regexp = new RegExp(this.compireRexExp(source, root).source, flag);
       }
-      return r;
+      compireRexExp(source, name, start = 0) {
+        let length = 0;
+        let regexp = source[name].source.replace(/\<([^>]+)\>/g, (str, $1) => {
+          this.table.set(start + length, $1)
+          ++length;
+          let r = this.compireRexExp(source, $1, start + length)
+          length += r.length;
+          return `(${r.source})`
+        })
+        return { source: regexp, length }
+      }
+      get lastIndex() {
+        return this.regexp.lastIndex;
+      }
+      exec(string){
+        let r = this.regexp.exec(string)
+        for(let i=1; i<r.length; i++){
+          if(r[i] !== void 0){
+            r[this.table.get(i-1)] = r[i];
+          }
+        }
+        return r;
+      }
     }
-
-    get lastIndex() {
-      return this.regexp.lastIndex;
-    }
-
-    set lastIndex(value) {
-      this.regexp.lastIndex = lastIndex;
-    }
-
-    get source() {
-      return this.regexp.source;
-    }
-  }
-
-
-  function scan(str) {
-    const regExp = new XRegExp({
-      InputElement: /<WhiteSpace>|<LineTerminator>|<Comments>|<Token>/,
+  
+    let xregexp = {
+      InputElement: /<WhiteSpace>|<LineTerminator>|<Comment>|<Token>/,
       WhiteSpace: / /,
       LineTerminator: /\n|\r/,
-      Comments: /<SingleLineComment>|<MultiLineComment>/,
-      SingleLineComment: /\/\/.*<LineTerminator>/,
-      MultiLineComment: /\/\*(?:[^*]|\*[^\/])*\*\//,
-      Token: /<Literal>|<Keywords>|<Identifier>|<Punctuator>/,
-      Literal: /<NumberLiteral>|<BooleanLiteral>|<StringLiteral>|<NullLiteral>/,
-      Keywords: /if|else|for|function/,
-      Identifier: /[$_a-zA-Z][0-9a-zA-Z$_]*/,
-      NumberLiteral: /(?:[1-9][0-9]*|0)(?:\.[0-9]*)?|\.[0-9]+/,
+      Comment: /\/\*(?:[^*]|\*[^\/])*\*\/|\/\/[^\n]*/,
+      Token: /<Literal>|<Keywords>|<Indentifier>|<Punctuator>/,
+      Literal: /<NumberLiteral>|<StringLiteral>|<BooleanLiteral>|<NullLiteral>/,
+      NumberLiteral: /[1-9][0-9]*|0\.[0-9]*|\.[0-9]+/,
+      StringLiteral: /"(?:[^"\n]|\\[\s\S])*"|\'(?:[^'\n]|\\[\s\S])*\'/,
       BooleanLiteral: /true|false/,
-      StringLiteral: /'(?:[^'\n]|\\[\s\S])*'|"(?:[^'\n]|\\[\s\S])*"|`(?:[^'\n]|\\[\s\S])*`/,
       NullLiteral: /null/,
-      Punctuator: /\)|\(|\}|\{|\+|\-|\*|\/|\+\+|\-\-|\+=|\-=|\.|,|;|\:|=|==|===|!|!=|!==|@|&&|&|\|\||\||\]|\[|=>|\?|\>|\</,
-      // Punctuator: /\+|-|\*|\/|%|\+\+|\=\=|\=|--|\,|\?|\:|\{|\}|\(|\)|\<|\>|!|;/
-    }, "g", "InputElement");
-    // console.log(regExp.source);
-    while (regExp.lastIndex < str.length) {
-      const r = regExp.exec(str)
-      console.log(r);
-      if (!r === null) {
-        break;
+      Keywords: /if|for|while|function/,
+      Indentifier: /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+      Punctuator: /\)|\(?:|\}|\{|\+|\-|\*|\/|\+\+|\-\-|\+=|\-=|\.|,|;|\:|=|==|===|!|!=|!==|@|&&|&|\|\||\||\]|\[|=>|\?|\>|\</,
+    }
+  
+    function scan(str) {
+      let regexp = new XRegExp(xregexp, 'g', 'InputElement')
+      while (regexp.lastIndex < str.length) {
+        let r = regexp.exec(str)
+        document.write(r[0])
+        console.log(r);
       }
+  
     }
-  }
-
-  scan(`
-  13
-  5
-  7
-  // hello world
-  /*hello world*/
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      let cell = document.createElement("div");
-      cell.classList.add("cell");
-      cell.innerText =
-        pattern[i * 3 + j] === 2 ? "❌" : pattern[i * 3 + j] === 1 ? "⭕️" : "";
-      cell.addEventListener("click", () => useMove(i, j));
-      board.appendChild(cell);
+  
+    scan(`
+    13
+    5
+    7
+    // hello world
+    /*hello world*/
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        let cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.innerText =
+          pattern[i * 3 + j] === 2 ? "❌" : pattern[i * 3 + j] === 1 ? "⭕️" : "";
+        cell.addEventListener("click", () => useMove(i, j));
+        board.appendChild(cell);
+      }
+      board.appendChild(document.createElement("br"));
     }
-    board.appendChild(document.createElement("br"));
-  }
-   `);
-
-</script>
+     `);
+    // scan(`
+    // // hello world
+    // /*hello world*/
+    //  `);
+  
+  
+  </script>
+  </pre>
